@@ -1,49 +1,7 @@
 import {defineStore} from 'pinia'
 import axios from 'axios'
 
-const user = {
-                id: 1,
-                name: "Jane Smith",
-                email: "jane.smith@example.com",
-                role: "Administrator", // Can be "Administrator", "Manager", or "Analyst"
-                jobTitle: "Product Manager",
-                company: "Acme Corporation",
-                phone: "+1 (555) 123-4567",
-                avatarUrl: "https://example.com/avatars/jane.jpg", // Optional, could be null
-                createdAt: "2023-01-15T08:30:00Z", // When the account was created
-                lastLogin: "2023-04-02T14:22:10Z",
-                settings: {
-                    timezone: "America/New_York",
-                    language: "en",
-                    emailNotifications: {
-                        newResponses: true,
-                        weeklyReports: true,
-                        systemUpdates: false
-                    },
-                    defaultSurveySettings: {
-                        showProgressBar: true,
-                        allowPrevious: true,
-                        showStepTitles: true
-                    }
-                },
-                permissions: {
-                    canCreateSurveys: true,
-                    canManageUsers: true,
-                    canViewAnalytics: true,
-                    canExportData: true,
-                    canIntegrateWithApis: true
-                },
-                subscription: {
-                    plan: "Professional",
-                    startDate: "2023-01-15T08:30:00Z",
-                    renewalDate: "2024-01-15T08:30:00Z",
-                    maxSurveys: 100,
-                    maxResponsesPerMonth: 10000,
-                    features: ["custom-branding", "data-export", "api-access"]
-                },
-                twoFactorEnabled: true
-            };
-
+ 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
@@ -62,25 +20,23 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         async login(email, password) {
             this.loading = true
-            this.error = null
-            this.loading = false
-            return user;
+            this.error = null 
 
 
-            // try {
-            //     const response = await axios.post('/auth/login', {email, password})
-            //     this.token = response.data.token ?? 'xxx'
-            //     localStorage.setItem('auth_token', this.token)
-            //
-            //     await this.getUserProfile()
-            //
-            //     return this.user
-            // } catch (error) {
-            //     this.error = error.response?.data?.message || 'Login failed. Please check your credentials.'
-            //     throw error
-            // } finally {
-            //     this.loading = false
-            // }
+            try {
+                const response = await axios.post('/auth/login', {email, password})
+                this.token = response.data.token ?? 'xxx'
+                localStorage.setItem('auth_token', this.token)
+            
+                await this.getUserProfile()
+            
+                return this.user
+            } catch (error) {
+                this.error = error.response?.data?.message || 'Login failed. Please check your credentials.'
+                throw error
+            } finally {
+                this.loading = false
+            }
         },
 
         async register(userData) {
@@ -103,9 +59,7 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
-        async getUserProfile() {
-            this.user = user;
-            return this.user;
+        async getUserProfile() { 
             if (!this.token) {
                 return null
             }
